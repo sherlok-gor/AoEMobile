@@ -15,7 +15,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="Open RTS"
-run/main_scene="res://source/Main.tscn"
+run/main_scene="res://source/match/Match.tscn"
 config/features=PackedStringArray("4.6", "Forward Plus")
 boot_splash/bg_color=Color(0, 0, 0, 1)
 boot_splash/stretch_mode=0
@@ -24,7 +24,7 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-FeatureFlags="*res://source/FeatureFlags.tscn"
+FeatureFlags="*res://source/FeatureFlags.gd"
 Constants="*res://source/Constants.gd"
 Globals="*res://source/Globals.gd"
 MatchSignals="*res://source/match/MatchSignals.gd"
