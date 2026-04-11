@@ -1,64 +1,61 @@
 # right_control_panel.gd
 extends Panel
 
+const WorkerScene = preload("res://source/match/units/Worker.tscn")
+const CommandCenterScene = preload("res://source/match/units/CommandCenter.tscn")
+const VehicleFactoryScene = preload("res://source/match/units/VehicleFactory.tscn")
+
 @onready var content = $ContentContainer
 
 func _ready():
 	SelectionManager.selection_changed.connect(_on_selection_changed)
 
 func _on_selection_changed(selected: Array):
-	# 清空舊內容
 	for child in content.get_children():
 		child.queue_free()
-	
+
 	if selected.is_empty():
 		return
-	
+
 	var first = selected[0]
-	
-	# === 情況1：選到建築物（Town Center、Barracks 等）===
-	if first.is_in_group("structures") or first.has_method("produce_unit"):
+
+	# === 情況1：選到建築物（有生產隊列的單位）===
+	if first.find_child("ProductionQueue") != null:
 		_show_building_production_panel(first)
-	
-	# === 情況2：選到村民（單位）===
-	elif first.is_in_group("units") or first.is_in_group("villagers"):
+
+	# === 情況2：選到工作單位（Worker）===
+	elif first.is_in_group("controlled_units"):
 		_show_villager_build_panel(selected)
 
 func _show_building_production_panel(building: Node):
 	var label = Label.new()
 	label.text = "生產單位"
 	content.add_child(label)
-	
-	# 範例：Town Center 生產村民
-	var btn_villager = Button.new()
-	btn_villager.text = "訓練村民 (50食物)"
-	btn_villager.pressed.connect(func(): building.produce_unit("villager"))
-	content.add_child(btn_villager)
-	
-	# 範例：Barracks 生產士兵（之後你再加其他建築）
-	var btn_soldier = Button.new()
-	btn_soldier.text = "訓練士兵 (60食物 20黃金)"
-	btn_soldier.pressed.connect(func(): building.produce_unit("soldier"))
-	content.add_child(btn_soldier)
 
-func _show_villager_build_panel(selected_villagers: Array):
+	var production_queue = building.find_child("ProductionQueue")
+	if production_queue == null:
+		return
+
+	var btn_worker = Button.new()
+	btn_worker.text = "訓練工人"
+	btn_worker.pressed.connect(func(): production_queue.produce(WorkerScene))
+	content.add_child(btn_worker)
+
+func _show_villager_build_panel(selected_units: Array):
 	var label = Label.new()
-	label.text = "建造建築（%d 村民）" % selected_villagers.size()
+	label.text = "建造建築（%d 單位）" % selected_units.size()
 	content.add_child(label)
-	
-	var btn_house = Button.new()
-	btn_house.text = "建造房屋"
-	btn_house.pressed.connect(func(): enter_build_mode("house"))
-	content.add_child(btn_house)
-	
-	var btn_barracks = Button.new()
-	btn_barracks.text = "建造兵營"
-	btn_barracks.pressed.connect(func(): enter_build_mode("barracks"))
-	content.add_child(btn_barracks)
-	
-	# 可繼續加更多建築按鈕
 
-func enter_build_mode(building_type: String):
-	print("進入建造模式 → ", building_type)
-	# 之後這裡會呼叫全域 BuildManager，讓下一次點擊地圖就放置建築
-	# （我下一輪再給你完整放置邏輯）
+	var btn_cc = Button.new()
+	btn_cc.text = "建造指揮中心"
+	btn_cc.pressed.connect(func(): _enter_build_mode(CommandCenterScene))
+	content.add_child(btn_cc)
+
+	var btn_factory = Button.new()
+	btn_factory.text = "建造載具工廠"
+	btn_factory.pressed.connect(func(): _enter_build_mode(VehicleFactoryScene))
+	content.add_child(btn_factory)
+
+func _enter_build_mode(unit_scene) -> void:
+	MatchSignals.place_structure.emit(unit_scene)
+	print("進入建造模式 → ", unit_scene.resource_path)
