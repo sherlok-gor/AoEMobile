@@ -1,4 +1,4 @@
-[gd_scene load_steps=44 format=3 uid="uid://camns8fqod8d4"]
+[gd_scene load_steps=46 format=3 uid="uid://camns8fqod8d4"]
 
 [ext_resource type="Script" path="res://source/match/Match.gd" id="1_1555u"]
 [ext_resource type="Script" path="res://source/match/IsometricCamera3D.gd" id="1_qb2ry"]
@@ -29,6 +29,8 @@
 [ext_resource type="PackedScene" uid="uid://yn470qvc3eak" path="res://source/match/handlers/MatchEndHandler.tscn" id="26_4d7im"]
 [ext_resource type="PackedScene" uid="uid://ck6vrgdyg7hja" path="res://source/match/handlers/UnitGroupSelectionHandler.tscn" id="27_j2drv"]
 [ext_resource type="PackedScene" uid="uid://b8p6lcwubx1tp" path="res://source/match/handlers/UnitVisibilityHandler.tscn" id="32_fci1c"]
+[ext_resource type="PackedScene" path="res://source/VirtualJoystick.tscn" id="33_vjstick"]
+[ext_resource type="Script" path="res://source/right_control_panel.gd" id="34_rctrl"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_ysb0j"]
 sun_angle_max = 200.0
@@ -432,3 +434,25 @@ rectangular_selection_3d = NodePath("../../RectangularSelection3D")
 visible = false
 
 [node name="UnitVisibilityHandler" parent="Handlers" instance=ExtResource("32_fci1c")]
+
+[node name="MobileControls" type="CanvasLayer" parent="."]
+
+[node name="VirtualJoystick" parent="MobileControls" instance=ExtResource("33_vjstick")]
+
+[node name="RightControlPanel" type="Panel" parent="MobileControls"]
+anchor_left = 1.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -220.0
+grow_horizontal = 0
+grow_vertical = 2
+script = ExtResource("34_rctrl")
+
+[node name="ContentContainer" type="VBoxContainer" parent="MobileControls/RightControlPanel"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 5

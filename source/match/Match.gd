@@ -42,7 +42,18 @@ func _ready():
 	_move_camera_to_initial_position()
 	if settings.visibility == settings.Visibility.FULL:
 		fog_of_war.reveal()
+	_setup_virtual_joystick()
 	MatchSignals.match_started.emit()
+
+
+func _setup_virtual_joystick() -> void:
+	var joystick = find_child("VirtualJoystick")
+	if joystick != null:
+		joystick.camera_move.connect(_on_joystick_camera_move)
+
+
+func _on_joystick_camera_move(direction: Vector2) -> void:
+	_camera.set_joystick_direction(direction)
 
 
 func _unhandled_input(event):

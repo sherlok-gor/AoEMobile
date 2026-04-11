@@ -27,8 +27,8 @@ func get_group(type: String) -> Array:
 	match type:
 		"wood": return villagers_wood
 		"food": return villagers_food
-		"gold": villagers_gold
-		"stone": villagers_stone
+		"gold": return villagers_gold
+		"stone": return villagers_stone
 		"idle": return villagers_idle
 	return []
 
