@@ -9,14 +9,14 @@ const RIGHT_PANEL_BOUNDARY_RATIO := 0.8
 @export var radius := 80.0
 @export var selection_circle: Line2D = null
 
+signal camera_move(direction: Vector2)
+
 var dragging := false
 var touch_id := -1
 var center := Vector2.ZERO
 var selection_mode := false
 var selection_center := Vector2.ZERO
 var selection_radius := 0.0
-
-signal camera_move(direction: Vector2)
 
 
 func _ready() -> void:
@@ -31,7 +31,9 @@ func _gui_input(event: InputEvent) -> void:
 			dragging = true
 			touch_id = event.index
 			center = event.position
-			get_tree().create_timer(LONG_PRESS_DURATION).timeout.connect(_check_long_press.bind(event.position))
+			get_tree().create_timer(LONG_PRESS_DURATION).timeout.connect(
+				_check_long_press.bind(event.position)
+			)
 
 		elif not event.pressed and event.index == touch_id:
 			dragging = false

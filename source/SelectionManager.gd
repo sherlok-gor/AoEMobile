@@ -30,11 +30,17 @@ func _on_match_unit_died(unit: Node) -> void:
 
 func select_nodes(nodes: Array) -> void:
 	for node in current_selection:
-		if is_instance_valid(node) and node.has_method("set_selected"):
-			node.set_selected(false)
+		if not is_instance_valid(node):
+			continue
+		var selection_node = node.find_child("Selection")
+		if selection_node != null and selection_node.has_method("deselect"):
+			selection_node.deselect()
 	current_selection = nodes
 	for node in current_selection:
-		if is_instance_valid(node) and node.has_method("set_selected"):
-			node.set_selected(true)
+		if not is_instance_valid(node):
+			continue
+		var selection_node = node.find_child("Selection")
+		if selection_node != null and selection_node.has_method("select"):
+			selection_node.select()
 	selection_changed.emit(current_selection)
 	print("選取變化 → ", current_selection.size(), " 個物件")

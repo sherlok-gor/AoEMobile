@@ -21,7 +21,7 @@ const EXPECTED_PROJECTION = PROJECTION_ORTHOGONAL
 
 var _mouse_pos_when_rotation_started = null
 var _camera_global_pos_when_rotation_started = null
-var joystick_direction := Vector2.ZERO
+var _joystick_direction := Vector2.ZERO
 
 
 func _ready():
@@ -45,7 +45,7 @@ func _unhandled_input(event: InputEvent):
 
 
 func set_joystick_direction(direction: Vector2) -> void:
-	joystick_direction = direction
+	_joystick_direction = direction
 
 
 func set_size_safely(a_size: float):
@@ -112,7 +112,7 @@ func _calculate_screen_move_vector() -> Vector2:
 
 	# Apply joystick input when no keyboard/mouse movement is active
 	if move_vector.is_zero_approx():
-		move_vector = joystick_direction
+		move_vector = _joystick_direction
 
 	return move_vector
 
