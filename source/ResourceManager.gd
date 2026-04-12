@@ -26,7 +26,6 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	_try_sync_from_active_player()
 	_accumulator += delta
 	if _accumulator >= 1.0:
 		_accumulator -= 1.0
@@ -110,7 +109,14 @@ func get_group(type: String) -> Array:
 
 
 func _on_match_started() -> void:
+	if _active_player != null and _active_player.changed.is_connected(_on_active_player_changed):
+		_active_player.changed.disconnect(_on_active_player_changed)
 	_active_player = _find_human_player()
+	if (
+		_active_player != null
+		and not _active_player.changed.is_connected(_on_active_player_changed)
+	):
+		_active_player.changed.connect(_on_active_player_changed)
 	_try_sync_from_active_player(true)
 
 
@@ -151,8 +157,14 @@ func _get_cost_value(cost: Dictionary, key: String, legacy_key: String) -> int:
 
 
 func _as_int(value: Variant) -> int:
+	# Resource costs are expected to be numeric.
+	# Defaulting to 0 keeps invalid input safe and non-fatal.
 	if value is int:
 		return value
 	if value is float:
 		return int(value)
 	return 0
+
+
+func _on_active_player_changed() -> void:
+	_try_sync_from_active_player()
