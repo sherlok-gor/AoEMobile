@@ -75,21 +75,21 @@ func remove_villager(villager: Node) -> void:
 func has_resources(cost: Dictionary) -> bool:
 	# Support both the new mobile resource naming (wood/gold)
 	# and legacy match naming (resource_a/resource_b) during migration.
+	var cost_wood = _get_cost_value(cost, "wood", "resource_a")
+	var cost_gold = _get_cost_value(cost, "gold", "resource_b")
 	return (
-		wood >= (cost.get("wood", 0) + cost.get("resource_a", 0))
+		wood >= cost_wood
 		and food >= cost.get("food", 0)
-		and gold >= (cost.get("gold", 0) + cost.get("resource_b", 0))
+		and gold >= cost_gold
 		and stone >= cost.get("stone", 0)
 	)
 
 
 func subtract_resources(cost: Dictionary) -> void:
-	wood -= cost.get("wood", 0)
+	wood -= _get_cost_value(cost, "wood", "resource_a")
 	food -= cost.get("food", 0)
-	gold -= cost.get("gold", 0)
+	gold -= _get_cost_value(cost, "gold", "resource_b")
 	stone -= cost.get("stone", 0)
-	wood -= cost.get("resource_a", 0)
-	gold -= cost.get("resource_b", 0)
 	_sync_to_active_player()
 	resources_changed.emit()
 
@@ -142,3 +142,9 @@ func _sync_to_active_player() -> void:
 		return
 	_active_player.resource_a = wood
 	_active_player.resource_b = gold
+
+
+func _get_cost_value(cost: Dictionary, key: String, legacy_key: String) -> int:
+	if cost.has(key):
+		return int(cost[key])
+	return int(cost.get(legacy_key, 0))
