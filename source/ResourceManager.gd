@@ -114,7 +114,7 @@ func _on_match_started() -> void:
 	_try_sync_from_active_player(true)
 
 
-func _find_human_player() -> Human:
+func _find_human_player() -> Variant:
 	var human_players = get_tree().get_nodes_in_group("players").filter(
 		func(player): return player is Human
 	)
@@ -146,5 +146,13 @@ func _sync_to_active_player() -> void:
 
 func _get_cost_value(cost: Dictionary, key: String, legacy_key: String) -> int:
 	if cost.has(key):
-		return int(cost[key])
-	return int(cost.get(legacy_key, 0))
+		return _as_int(cost[key])
+	return _as_int(cost.get(legacy_key, 0))
+
+
+func _as_int(value: Variant) -> int:
+	if value is int:
+		return value
+	if value is float:
+		return int(value)
+	return 0
