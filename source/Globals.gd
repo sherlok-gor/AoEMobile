@@ -9,9 +9,11 @@ var options = (
 var god_mode = false
 var cache = {}
 
+
 func _unhandled_input(event):
 	if event.is_action_pressed("toggle_god_mode"):
 		_toggle_god_mode()
+
 
 func _toggle_god_mode():
 	if not FeatureFlags.god_mode:

@@ -1,6 +1,11 @@
 # ResourceManager.gd
 extends Node
 
+signal resources_changed
+
+const Human = preload("res://source/match/players/human/Human.gd")
+const RESOURCE_RATE := 0.5  # resources per villager per second
+
 var wood: int = 300
 var food: int = 200
 var gold: int = 150
@@ -12,10 +17,12 @@ var villagers_gold: Array = []
 var villagers_stone: Array = []
 var villagers_idle: Array = []
 
-signal resources_changed
-
-const RESOURCE_RATE := 0.5  # resources per villager per second
+var _active_player = null
 var _accumulator := 0.0
+
+
+func _ready() -> void:
+	MatchSignals.match_started.connect(_on_match_started)
 
 
 func _process(delta: float) -> void:
@@ -36,17 +43,23 @@ func _process(delta: float) -> void:
 			stone += roundi(villagers_stone.size() * RESOURCE_RATE)
 			changed = true
 		if changed:
+			_sync_to_active_player()
 			resources_changed.emit()
 
 
 func add_villager(villager: Node, resource_type: String = "idle") -> void:
 	remove_villager(villager)
 	match resource_type:
-		"wood": villagers_wood.append(villager)
-		"food": villagers_food.append(villager)
-		"gold": villagers_gold.append(villager)
-		"stone": villagers_stone.append(villager)
-		_: villagers_idle.append(villager)
+		"wood":
+			villagers_wood.append(villager)
+		"food":
+			villagers_food.append(villager)
+		"gold":
+			villagers_gold.append(villager)
+		"stone":
+			villagers_stone.append(villager)
+		_:
+			villagers_idle.append(villager)
 	resources_changed.emit()
 
 
@@ -59,27 +72,101 @@ func remove_villager(villager: Node) -> void:
 
 
 func has_resources(cost: Dictionary) -> bool:
+	# Support both the new mobile resource naming (wood/gold)
+	# and legacy match naming (resource_a/resource_b) during migration.
+	var cost_wood = _get_cost_value(cost, "wood", "resource_a")
+	var cost_gold = _get_cost_value(cost, "gold", "resource_b")
 	return (
-		wood >= cost.get("wood", 0)
+		wood >= cost_wood
 		and food >= cost.get("food", 0)
-		and gold >= cost.get("gold", 0)
+		and gold >= cost_gold
 		and stone >= cost.get("stone", 0)
 	)
 
 
 func subtract_resources(cost: Dictionary) -> void:
-	wood -= cost.get("wood", 0)
+	wood -= _get_cost_value(cost, "wood", "resource_a")
 	food -= cost.get("food", 0)
-	gold -= cost.get("gold", 0)
+	gold -= _get_cost_value(cost, "gold", "resource_b")
 	stone -= cost.get("stone", 0)
+	_sync_to_active_player()
 	resources_changed.emit()
 
 
 func get_group(type: String) -> Array:
 	match type:
-		"wood": return villagers_wood
-		"food": return villagers_food
-		"gold": return villagers_gold
-		"stone": return villagers_stone
-		"idle": return villagers_idle
+		"wood":
+			return villagers_wood
+		"food":
+			return villagers_food
+		"gold":
+			return villagers_gold
+		"stone":
+			return villagers_stone
+		"idle":
+			return villagers_idle
 	return []
+
+
+func _on_match_started() -> void:
+	if (
+		_active_player != null
+		and _active_player.has_signal("changed")
+		and _active_player.changed.is_connected(_on_active_player_changed)
+	):
+		_active_player.changed.disconnect(_on_active_player_changed)
+	_active_player = _find_human_player()
+	if _active_player != null and _active_player.has_signal("changed"):
+		_active_player.changed.connect(_on_active_player_changed)
+	_try_sync_from_active_player(true)
+
+
+func _find_human_player() -> Variant:
+	var human_players = get_tree().get_nodes_in_group("players").filter(
+		func(player): return player is Human
+	)
+	if human_players.is_empty():
+		return null
+	return human_players[0]
+
+
+func _try_sync_from_active_player(force_emit = false) -> void:
+	if _active_player == null:
+		return
+	var changed = false
+	if wood != _active_player.resource_a:
+		wood = _active_player.resource_a
+		changed = true
+	if gold != _active_player.resource_b:
+		gold = _active_player.resource_b
+		changed = true
+	if changed or force_emit:
+		resources_changed.emit()
+
+
+func _sync_to_active_player() -> void:
+	if _active_player == null:
+		return
+	_active_player.resource_a = wood
+	_active_player.resource_b = gold
+
+
+func _get_cost_value(cost: Dictionary, key: String, legacy_key: String) -> int:
+	if cost.has(key):
+		return _as_int(cost[key])
+	return _as_int(cost.get(legacy_key, 0))
+
+
+func _as_int(value: Variant) -> int:
+	# Resource costs are expected to be numeric.
+	# Callers should validate upstream; invalid values default to 0 to stay non-fatal.
+	if value is int:
+		return value
+	if value is float:
+		return int(value)
+	push_warning("ResourceManager received non-numeric cost value; defaulting to 0")
+	return 0
+
+
+func _on_active_player_changed() -> void:
+	_try_sync_from_active_player()

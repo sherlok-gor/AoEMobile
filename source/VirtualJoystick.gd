@@ -1,6 +1,8 @@
 # VirtualJoystick.gd
 extends Control
 
+signal camera_move(direction: Vector2)
+
 const LONG_PRESS_DURATION := 0.6
 const INITIAL_SELECTION_RADIUS := 50.0
 const DEFAULT_WORLD_RADIUS := 5.0
@@ -16,8 +18,6 @@ var selection_mode := false
 var selection_center := Vector2.ZERO
 var selection_radius := 0.0
 
-signal camera_move(direction: Vector2)
-
 
 func _ready() -> void:
 	center = size / 2
@@ -31,7 +31,9 @@ func _gui_input(event: InputEvent) -> void:
 			dragging = true
 			touch_id = event.index
 			center = event.position
-			get_tree().create_timer(LONG_PRESS_DURATION).timeout.connect(_check_long_press.bind(event.position))
+			get_tree().create_timer(LONG_PRESS_DURATION).timeout.connect(
+				_check_long_press.bind(event.position)
+			)
 
 		elif not event.pressed and event.index == touch_id:
 			dragging = false
@@ -82,8 +84,7 @@ func _finish_selection() -> void:
 
 	var ground_plane := Plane(Vector3.UP, 0)
 	var center_3d: Variant = ground_plane.intersects_ray(
-		camera.project_ray_origin(selection_center),
-		camera.project_ray_normal(selection_center)
+		camera.project_ray_origin(selection_center), camera.project_ray_normal(selection_center)
 	)
 	if center_3d == null:
 		return
@@ -91,8 +92,7 @@ func _finish_selection() -> void:
 	# Convert screen-space radius to world-space radius
 	var edge_screen := selection_center + Vector2(selection_radius, 0)
 	var edge_3d: Variant = ground_plane.intersects_ray(
-		camera.project_ray_origin(edge_screen),
-		camera.project_ray_normal(edge_screen)
+		camera.project_ray_origin(edge_screen), camera.project_ray_normal(edge_screen)
 	)
 	var world_radius := DEFAULT_WORLD_RADIUS
 	if edge_3d != null:
@@ -102,9 +102,7 @@ func _finish_selection() -> void:
 	MatchSignals.deselect_all_units.emit()
 	var selected_count := 0
 	for unit in get_tree().get_nodes_in_group("controlled_units"):
-		var unit_pos_flat := Vector3(
-			unit.global_position.x, 0.0, unit.global_position.z
-		)
+		var unit_pos_flat := Vector3(unit.global_position.x, 0.0, unit.global_position.z)
 		if unit_pos_flat.distance_to(center_3d as Vector3) <= world_radius:
 			var selection_node = unit.find_child("Selection")
 			if selection_node != null and selection_node.has_method("select"):

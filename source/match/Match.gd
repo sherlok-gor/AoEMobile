@@ -38,6 +38,7 @@ func _ready():
 	_setup_subsystems_dependent_on_map()
 	_setup_players()
 	_setup_player_units()
+	_setup_control_ui_mode()
 	visible_player = get_tree().get_nodes_in_group("players")[settings.visible_player]
 	_move_camera_to_initial_position()
 	if settings.visibility == settings.Visibility.FULL:
@@ -50,6 +51,20 @@ func _setup_virtual_joystick() -> void:
 	var joystick = find_child("VirtualJoystick")
 	if joystick != null:
 		joystick.camera_move.connect(_on_joystick_camera_move)
+
+
+func _setup_control_ui_mode() -> void:
+	if not FeatureFlags.prefer_new_mobile_ui:
+		return
+	var right_control_panel = find_child("RightControlPanel")
+	if right_control_panel == null:
+		return
+	var production_queue = find_child("ProductionQueue")
+	if production_queue != null:
+		production_queue.hide()
+	var unit_menus = find_child("UnitMenus")
+	if unit_menus != null:
+		unit_menus.hide()
 
 
 func _on_joystick_camera_move(direction: Vector2) -> void:

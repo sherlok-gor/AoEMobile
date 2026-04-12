@@ -2,6 +2,7 @@ extends Node
 
 @export_group("Game")
 @export var save_user_files_in_tmp = false
+@export var prefer_new_mobile_ui = true
 
 @export_group("Match")
 @export var allow_resources_deficit_spending = false
