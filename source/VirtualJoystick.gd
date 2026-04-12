@@ -4,6 +4,7 @@ extends Control
 const LONG_PRESS_DURATION := 0.6
 const INITIAL_SELECTION_RADIUS := 50.0
 const DEFAULT_WORLD_RADIUS := 5.0
+const RIGHT_PANEL_BOUNDARY_RATIO := 0.8
 
 @export var radius := 80.0
 @export var selection_circle: Line2D = null
@@ -25,6 +26,8 @@ func _ready() -> void:
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch:
 		if event.pressed and not dragging:
+			if event.position.x > get_viewport_rect().size.x * RIGHT_PANEL_BOUNDARY_RATIO:
+				return
 			dragging = true
 			touch_id = event.index
 			center = event.position
