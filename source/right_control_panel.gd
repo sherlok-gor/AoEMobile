@@ -8,6 +8,7 @@ const VehicleFactoryScene = preload("res://source/match/units/VehicleFactory.tsc
 @onready var content = $ContentContainer
 
 func _ready():
+	hide()
 	SelectionManager.selection_changed.connect(_on_selection_changed)
 
 func _on_selection_changed(selected: Array):
@@ -15,7 +16,10 @@ func _on_selection_changed(selected: Array):
 		child.queue_free()
 
 	if selected.is_empty():
+		hide()
 		return
+
+	show()
 
 	var first = selected[0]
 
