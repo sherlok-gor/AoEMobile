@@ -54,6 +54,9 @@ func _setup_virtual_joystick() -> void:
 
 
 func _setup_control_ui_mode() -> void:
+	# Both UI systems have their _ready() called before this method runs, because
+	# child nodes initialize before their parent in Godot's scene tree. The inactive
+	# system is destroyed here via queue_free() after initialization completes.
 	if FeatureFlags.prefer_new_mobile_ui:
 		var production_queue = find_child("ProductionQueue")
 		if production_queue != null:
