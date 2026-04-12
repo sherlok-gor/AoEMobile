@@ -73,6 +73,8 @@ func remove_villager(villager: Node) -> void:
 
 
 func has_resources(cost: Dictionary) -> bool:
+	# Support both the new mobile resource naming (wood/gold)
+	# and legacy match naming (resource_a/resource_b) during migration.
 	return (
 		wood >= (cost.get("wood", 0) + cost.get("resource_a", 0))
 		and food >= cost.get("food", 0)
@@ -112,7 +114,7 @@ func _on_match_started() -> void:
 	_try_sync_from_active_player(true)
 
 
-func _find_human_player():
+func _find_human_player() -> Human:
 	var human_players = get_tree().get_nodes_in_group("players").filter(
 		func(player): return player is Human
 	)
