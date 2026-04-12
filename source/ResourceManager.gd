@@ -109,10 +109,14 @@ func get_group(type: String) -> Array:
 
 
 func _on_match_started() -> void:
-	if _active_player != null and _active_player.changed.is_connected(_on_active_player_changed):
+	if (
+		_active_player != null
+		and _active_player.has_signal("changed")
+		and _active_player.changed.is_connected(_on_active_player_changed)
+	):
 		_active_player.changed.disconnect(_on_active_player_changed)
 	_active_player = _find_human_player()
-	if _active_player != null:
+	if _active_player != null and _active_player.has_signal("changed"):
 		_active_player.changed.connect(_on_active_player_changed)
 	_try_sync_from_active_player(true)
 
@@ -160,6 +164,7 @@ func _as_int(value: Variant) -> int:
 		return value
 	if value is float:
 		return int(value)
+	push_warning("ResourceManager received non-numeric cost value; defaulting to 0")
 	return 0
 
 
