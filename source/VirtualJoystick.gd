@@ -1,6 +1,8 @@
 # VirtualJoystick.gd
 extends Control
 
+signal camera_move(direction: Vector2)
+
 const LONG_PRESS_DURATION := 0.6
 const INITIAL_SELECTION_RADIUS := 50.0
 const DEFAULT_WORLD_RADIUS := 5.0
@@ -8,8 +10,6 @@ const RIGHT_PANEL_BOUNDARY_RATIO := 0.8
 
 @export var radius := 80.0
 @export var selection_circle: Line2D = null
-
-signal camera_move(direction: Vector2)
 
 var dragging := false
 var touch_id := -1
@@ -84,8 +84,7 @@ func _finish_selection() -> void:
 
 	var ground_plane := Plane(Vector3.UP, 0)
 	var center_3d: Variant = ground_plane.intersects_ray(
-		camera.project_ray_origin(selection_center),
-		camera.project_ray_normal(selection_center)
+		camera.project_ray_origin(selection_center), camera.project_ray_normal(selection_center)
 	)
 	if center_3d == null:
 		return
@@ -93,8 +92,7 @@ func _finish_selection() -> void:
 	# Convert screen-space radius to world-space radius
 	var edge_screen := selection_center + Vector2(selection_radius, 0)
 	var edge_3d: Variant = ground_plane.intersects_ray(
-		camera.project_ray_origin(edge_screen),
-		camera.project_ray_normal(edge_screen)
+		camera.project_ray_origin(edge_screen), camera.project_ray_normal(edge_screen)
 	)
 	var world_radius := DEFAULT_WORLD_RADIUS
 	if edge_3d != null:
@@ -104,9 +102,7 @@ func _finish_selection() -> void:
 	MatchSignals.deselect_all_units.emit()
 	var selected_count := 0
 	for unit in get_tree().get_nodes_in_group("controlled_units"):
-		var unit_pos_flat := Vector3(
-			unit.global_position.x, 0.0, unit.global_position.z
-		)
+		var unit_pos_flat := Vector3(unit.global_position.x, 0.0, unit.global_position.z)
 		if unit_pos_flat.distance_to(center_3d as Vector3) <= world_radius:
 			var selection_node = unit.find_child("Selection")
 			if selection_node != null and selection_node.has_method("select"):

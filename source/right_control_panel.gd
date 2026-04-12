@@ -8,9 +8,11 @@ const Worker = preload("res://source/match/units/Worker.gd")
 
 @onready var content = $ContentContainer
 
+
 func _ready():
 	hide()
 	SelectionManager.selection_changed.connect(_on_selection_changed)
+
 
 func _on_selection_changed(selected: Array):
 	for child in content.get_children():
@@ -32,6 +34,7 @@ func _on_selection_changed(selected: Array):
 	elif first is Worker and first.is_in_group("controlled_units"):
 		_show_villager_build_panel(selected)
 
+
 func _show_building_production_panel(building: Node):
 	var label = Label.new()
 	label.text = "生產單位"
@@ -45,6 +48,7 @@ func _show_building_production_panel(building: Node):
 	btn_worker.text = "訓練工人"
 	btn_worker.pressed.connect(func(): production_queue.produce(WorkerScene))
 	content.add_child(btn_worker)
+
 
 func _show_villager_build_panel(selected_units: Array):
 	var label = Label.new()
@@ -60,6 +64,7 @@ func _show_villager_build_panel(selected_units: Array):
 	btn_factory.text = "建造載具工廠"
 	btn_factory.pressed.connect(func(): _enter_build_mode(VehicleFactoryScene))
 	content.add_child(btn_factory)
+
 
 func _enter_build_mode(unit_scene) -> void:
 	MatchSignals.place_structure.emit(unit_scene)
