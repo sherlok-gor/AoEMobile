@@ -2,6 +2,7 @@
 extends Panel
 
 const WorkerScene = preload("res://source/match/units/Worker.tscn")
+const WorkerScript = preload("res://source/match/units/Worker.gd")
 const CommandCenterScene = preload("res://source/match/units/CommandCenter.tscn")
 const VehicleFactoryScene = preload("res://source/match/units/VehicleFactory.tscn")
 
@@ -71,5 +72,4 @@ func _enter_build_mode(unit_scene) -> void:
 
 
 func _is_worker(unit: Node) -> bool:
-	var script = unit.get_script()
-	return script != null and script.resource_path == "res://source/match/units/Worker.gd"
+	return unit is WorkerScript

@@ -113,8 +113,6 @@ func _on_match_started() -> void:
 		_active_player.changed.disconnect(_on_active_player_changed)
 	_active_player = _find_human_player()
 	if _active_player != null:
-		if _active_player.changed.is_connected(_on_active_player_changed):
-			_active_player.changed.disconnect(_on_active_player_changed)
 		_active_player.changed.connect(_on_active_player_changed)
 	_try_sync_from_active_player(true)
 
