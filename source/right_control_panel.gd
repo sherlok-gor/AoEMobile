@@ -4,7 +4,6 @@ extends Panel
 const WorkerScene = preload("res://source/match/units/Worker.tscn")
 const CommandCenterScene = preload("res://source/match/units/CommandCenter.tscn")
 const VehicleFactoryScene = preload("res://source/match/units/VehicleFactory.tscn")
-const Worker = preload("res://source/match/units/Worker.gd")
 
 @onready var content = $ContentContainer
 
@@ -31,7 +30,7 @@ func _on_selection_changed(selected: Array):
 		_show_building_production_panel(first)
 
 	# === 情況2：選到工作單位（Worker）===
-	elif first is Worker and first.is_in_group("controlled_units"):
+	elif _is_worker(first) and first.is_in_group("controlled_units"):
 		_show_villager_build_panel(selected)
 
 
@@ -69,3 +68,8 @@ func _show_villager_build_panel(selected_units: Array):
 func _enter_build_mode(unit_scene) -> void:
 	MatchSignals.place_structure.emit(unit_scene)
 	print("進入建造模式 → ", unit_scene.resource_path)
+
+
+func _is_worker(unit: Node) -> bool:
+	var script = unit.get_script()
+	return script != null and script.resource_path == "res://source/match/units/Worker.gd"
