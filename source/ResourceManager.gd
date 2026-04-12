@@ -159,7 +159,7 @@ func _get_cost_value(cost: Dictionary, key: String, legacy_key: String) -> int:
 
 func _as_int(value: Variant) -> int:
 	# Resource costs are expected to be numeric.
-	# Defaulting to 0 keeps invalid input safe and non-fatal.
+	# Callers should validate upstream; invalid values default to 0 to stay non-fatal.
 	if value is int:
 		return value
 	if value is float:
