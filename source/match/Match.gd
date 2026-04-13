@@ -54,23 +54,12 @@ func _setup_virtual_joystick() -> void:
 
 
 func _setup_control_ui_mode() -> void:
-	# Both UI systems have their _ready() called before this method runs, because
-	# child nodes initialize before their parent in Godot's scene tree. The inactive
-	# system is destroyed here via queue_free() after initialization completes.
-	if FeatureFlags.prefer_new_mobile_ui:
-		var production_queue = find_child("ProductionQueue")
-		if production_queue != null:
-			production_queue.queue_free()
-		var unit_menus = find_child("UnitMenus")
-		if unit_menus != null:
-			unit_menus.queue_free()
-	else:
-		var right_control_panel = find_child("RightControlPanel")
-		if right_control_panel != null:
-			right_control_panel.queue_free()
-		var joystick = find_child("VirtualJoystick")
-		if joystick != null:
-			joystick.queue_free()
+	var production_queue = get_node_or_null("HUD/MarginContainer3/VBoxContainer/ProductionQueue")
+	if production_queue != null:
+		production_queue.queue_free()
+	var unit_menus = get_node_or_null("HUD/MarginContainer3/VBoxContainer/UnitMenus")
+	if unit_menus != null:
+		unit_menus.queue_free()
 
 
 func _on_joystick_camera_move(direction: Vector2) -> void:
