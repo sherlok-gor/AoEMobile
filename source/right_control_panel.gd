@@ -68,7 +68,6 @@ func _show_villager_build_panel(selected_units: Array):
 
 func _enter_build_mode(unit_scene) -> void:
 	MatchSignals.place_structure.emit(unit_scene)
-	print("進入建造模式 → ", unit_scene.resource_path)
 
 
 func _is_worker(unit: Node) -> bool:

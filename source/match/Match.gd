@@ -26,6 +26,7 @@ var visible_players = null:
 @onready var _camera = $IsometricCamera3D
 @onready var _players = $Players
 @onready var _terrain = $Terrain
+@onready var _legacy_ui_container = $HUD/MarginContainer3/VBoxContainer
 
 
 func _enter_tree():
@@ -38,7 +39,7 @@ func _ready():
 	_setup_subsystems_dependent_on_map()
 	_setup_players()
 	_setup_player_units()
-	_setup_control_ui_mode()
+	_remove_legacy_control_ui()
 	visible_player = get_tree().get_nodes_in_group("players")[settings.visible_player]
 	_move_camera_to_initial_position()
 	if settings.visibility == settings.Visibility.FULL:
@@ -79,7 +80,10 @@ func _unhandled_input(event):
 
 
 func _set_map(a_map):
-	assert(get_node_or_null("Map") == null, "map already set")
+	var existing_map = get_node_or_null("Map")
+	if existing_map != null:
+		remove_child(existing_map)
+		existing_map.queue_free()
 	a_map.name = "Map"
 	add_child(a_map)
 	a_map.owner = self
