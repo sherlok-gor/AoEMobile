@@ -26,6 +26,7 @@ var visible_players = null:
 @onready var _camera = $IsometricCamera3D
 @onready var _players = $Players
 @onready var _terrain = $Terrain
+@onready var _legacy_ui_container = $HUD/MarginContainer3/VBoxContainer
 
 
 func _enter_tree():
@@ -38,7 +39,7 @@ func _ready():
 	_setup_subsystems_dependent_on_map()
 	_setup_players()
 	_setup_player_units()
-	_setup_control_ui_mode()
+	_remove_legacy_control_ui()
 	visible_player = get_tree().get_nodes_in_group("players")[settings.visible_player]
 	_move_camera_to_initial_position()
 	if settings.visibility == settings.Visibility.FULL:
@@ -53,24 +54,13 @@ func _setup_virtual_joystick() -> void:
 		joystick.camera_move.connect(_on_joystick_camera_move)
 
 
-func _setup_control_ui_mode() -> void:
-	# Both UI systems have their _ready() called before this method runs, because
-	# child nodes initialize before their parent in Godot's scene tree. The inactive
-	# system is destroyed here via queue_free() after initialization completes.
-	if FeatureFlags.prefer_new_mobile_ui:
-		var production_queue = find_child("ProductionQueue")
-		if production_queue != null:
-			production_queue.queue_free()
-		var unit_menus = find_child("UnitMenus")
-		if unit_menus != null:
-			unit_menus.queue_free()
-	else:
-		var right_control_panel = find_child("RightControlPanel")
-		if right_control_panel != null:
-			right_control_panel.queue_free()
-		var joystick = find_child("VirtualJoystick")
-		if joystick != null:
-			joystick.queue_free()
+func _remove_legacy_control_ui() -> void:
+	var production_queue = _legacy_ui_container.get_node_or_null("ProductionQueue")
+	if production_queue != null:
+		production_queue.queue_free()
+	var unit_menus = _legacy_ui_container.get_node_or_null("UnitMenus")
+	if unit_menus != null:
+		unit_menus.queue_free()
 
 
 func _on_joystick_camera_move(direction: Vector2) -> void:

@@ -7,8 +7,6 @@ var current_selection: Array = []
 
 
 func _ready() -> void:
-	if not FeatureFlags.prefer_new_mobile_ui:
-		return
 	MatchSignals.unit_selected.connect(_on_match_unit_selected)
 	MatchSignals.unit_deselected.connect(_on_match_unit_deselected)
 	MatchSignals.unit_died.connect(_on_match_unit_died)
@@ -29,4 +27,3 @@ func _on_match_unit_died(unit: Node) -> void:
 	if current_selection.has(unit):
 		current_selection.erase(unit)
 		selection_changed.emit(current_selection)
-
