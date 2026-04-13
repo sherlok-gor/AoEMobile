@@ -65,9 +65,6 @@ func _setup_control_ui_mode() -> void:
 		var right_control_panel = find_child("RightControlPanel")
 		if right_control_panel != null:
 			right_control_panel.queue_free()
-		var joystick = find_child("VirtualJoystick")
-		if joystick != null:
-			joystick.queue_free()
 
 
 func _on_joystick_camera_move(direction: Vector2) -> void:
