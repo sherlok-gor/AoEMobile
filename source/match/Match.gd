@@ -54,13 +54,18 @@ func _setup_virtual_joystick() -> void:
 		joystick.camera_move.connect(_on_joystick_camera_move)
 
 
-func _remove_legacy_control_ui() -> void:
-	var production_queue = _legacy_ui_container.get_node_or_null("ProductionQueue")
-	if production_queue != null:
-		production_queue.queue_free()
-	var unit_menus = _legacy_ui_container.get_node_or_null("UnitMenus")
-	if unit_menus != null:
-		unit_menus.queue_free()
+func _setup_control_ui_mode() -> void:
+	if FeatureFlags.prefer_new_mobile_ui:
+		var production_queue = find_child("ProductionQueue")
+		if production_queue != null:
+			production_queue.queue_free()
+		var unit_menus = find_child("UnitMenus")
+		if unit_menus != null:
+			unit_menus.queue_free()
+	else:
+		var right_control_panel = find_child("RightControlPanel")
+		if right_control_panel != null:
+			right_control_panel.queue_free()
 
 
 func _on_joystick_camera_move(direction: Vector2) -> void:
