@@ -99,12 +99,10 @@ func _finish_selection() -> void:
 
 	# Deselect all first, then select units within radius
 	MatchSignals.deselect_all_units.emit()
-	var selected_count := 0
 	for unit in get_tree().get_nodes_in_group("controlled_units"):
 		var unit_pos_flat := Vector3(unit.global_position.x, 0.0, unit.global_position.z)
 		if unit_pos_flat.distance_to(center_3d as Vector3) <= world_radius:
 			var selection_node = unit.find_child("Selection")
 			if selection_node != null and selection_node.has_method("select"):
 				selection_node.select()
-				selected_count += 1
 
