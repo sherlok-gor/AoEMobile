@@ -26,6 +26,7 @@ func _on_match_unit_deselected(unit: Node) -> void:
 
 
 func _on_match_unit_died(unit: Node) -> void:
-	if current_selection.erase(unit):
+	if current_selection.has(unit):
+		current_selection.erase(unit)
 		selection_changed.emit(current_selection)
 
