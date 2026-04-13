@@ -244,28 +244,6 @@ script = ExtResource("17_6fprk")
 [node name="NavigationRegion3D" type="NavigationRegion3D" parent="Navigation/Terrain"]
 navigation_mesh = SubResource("NavigationMesh_exfwj")
 
-[node name="Units" type="Node3D" parent="."]
-
-[node name="Player0" type="Node3D" parent="Units"]
-
-[node name="Player1" type="Node3D" parent="Units"]
-
-[node name="Player2" type="Node3D" parent="Units"]
-
-[node name="Player3" type="Node3D" parent="Units"]
-
-[node name="Player4" type="Node3D" parent="Units"]
-
-[node name="Player5" type="Node3D" parent="Units"]
-
-[node name="Player6" type="Node3D" parent="Units"]
-
-[node name="Player7" type="Node3D" parent="Units"]
-
-[node name="Player8" type="Node3D" parent="Units"]
-
-[node name="Player9" type="Node3D" parent="Units"]
-
 [node name="UI" type="CanvasLayer" parent="."]
 
 [node name="RectangularSelection2D" parent="UI" instance=ExtResource("16_ccb0o")]

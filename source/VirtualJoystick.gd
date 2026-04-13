@@ -60,7 +60,6 @@ func _check_long_press(pos: Vector2) -> void:
 		if selection_circle:
 			selection_circle.visible = true
 			selection_circle.position = selection_center
-		print("進入圓形選擇模式")
 
 
 func _update_circle() -> void:
@@ -108,4 +107,4 @@ func _finish_selection() -> void:
 			if selection_node != null and selection_node.has_method("select"):
 				selection_node.select()
 				selected_count += 1
-	print("圓形選取完成：", selected_count, " 單位")
+
