@@ -85,7 +85,10 @@ func _unhandled_input(event):
 
 
 func _set_map(a_map):
-	assert(get_node_or_null("Map") == null, "map already set")
+	var existing_map = get_node_or_null("Map")
+	if existing_map != null:
+		remove_child(existing_map)
+		existing_map.queue_free()
 	a_map.name = "Map"
 	add_child(a_map)
 	a_map.owner = self
