@@ -1,4 +1,4 @@
-[gd_scene load_steps=46 format=3 uid="uid://camns8fqod8d4"]
+[gd_scene load_steps=52 format=3 uid="uid://camns8fqod8d4"]
 
 [ext_resource type="Script" path="res://source/match/Match.gd" id="1_1555u"]
 [ext_resource type="Script" path="res://source/match/IsometricCamera3D.gd" id="1_qb2ry"]
@@ -31,6 +31,9 @@
 [ext_resource type="PackedScene" uid="uid://b8p6lcwubx1tp" path="res://source/match/handlers/UnitVisibilityHandler.tscn" id="32_fci1c"]
 [ext_resource type="PackedScene" path="res://source/VirtualJoystick.tscn" id="33_vjstick"]
 [ext_resource type="Script" path="res://source/right_control_panel.gd" id="34_rctrl"]
+[ext_resource type="Script" uid="uid://dodbypd5pqr1w" path="res://source/data-model/MatchSettings.gd" id="35_mstgs"]
+[ext_resource type="Script" uid="uid://3c4femqjj01a" path="res://source/data-model/PlayerSettings.gd" id="36_pstgs"]
+[ext_resource type="PackedScene" uid="uid://cbe63rdjw7y4p" path="res://source/match/maps/PlainAndSimple.tscn" id="37_plains"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_ysb0j"]
 sun_angle_max = 200.0
@@ -120,8 +123,29 @@ shader_parameter/reference_texture = SubResource("ViewportTexture_vu2gm")
 [sub_resource type="ViewportTexture" id="ViewportTexture_8q44e"]
 viewport_path = NodePath("HUD/MarginContainer/Minimap/MarginContainer/MinimapViewport")
 
+[sub_resource type="Resource" id="Resource_player0"]
+script = ExtResource("36_pstgs")
+color = Color(0.4, 0.694118, 1, 1)
+controller = 1
+spawn_index_offset = 0
+
+[sub_resource type="Resource" id="Resource_player1"]
+script = ExtResource("36_pstgs")
+color = Color(1, 0.360784, 0.45098, 1)
+controller = 2
+spawn_index_offset = 0
+
+[sub_resource type="Resource" id="Resource_msettings"]
+script = ExtResource("35_mstgs")
+players = Array[Resource]([SubResource("Resource_player0"), SubResource("Resource_player1")])
+visibility = 0
+visible_player = 0
+
 [node name="Match" type="Node3D"]
 script = ExtResource("1_1555u")
+settings = SubResource("Resource_msettings")
+
+[node name="Map" parent="." index="0" instance=ExtResource("37_plains")]
 
 [node name="Players" type="Node3D" parent="."]
 
